@@ -1,0 +1,20 @@
+{
+  "name": "glsl-transition-minify",
+  "version": "0.0.0",
+  "description": "Minify a GLSL Transition",
+  "author": "Gaëtan Renaudeau <renaudeau.gaetan@gmail.com>",
+  "main": "./compile.js",
+  "bin": {
+    "glsl-transition-minify": "./cmd.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/glslio/glsl-transition-minify"
+  },
+  "keywords": ["glsl", "minifier", "glsl-transition", "cli"],
+  "dependencies": {
+    "commander": "2.2.0"
+  },
+  "license": "MIT"
+}
+

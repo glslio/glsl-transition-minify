@@ -52,4 +52,3 @@ curl -X POST -d '{ "glsl": "void main () { float abcdef = 1.000; }" }' http://lo
 {"glsl":"void main(){float a=1.;}"}
 ```
 
-

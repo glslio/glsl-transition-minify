@@ -4,7 +4,7 @@ var program = require('commander');
 var http = require("http");
 var fs = require("fs");
 var qs = require('querystring');
-var compile = require("./compile");
+var minify = require("./minify");
 
 /////////////////////
 // Parameters
@@ -33,8 +33,8 @@ function cli () {
   program.input.resume();
   program.input.on('data', function(buf) { glsl += buf.toString(); });
   program.input.on('end', function() {
-    var result = compile(glsl, "fragment");
-    program.output.write(result);
+    var result = compile({ glsl: glsl });
+    program.output.write(result.glsl);
   });
 }
 
@@ -60,11 +60,10 @@ function server () {
           try {
             var json = JSON.parse(body);
             if (!("glsl" in json)) throw new Error("No 'glsl' field in provided JSON.");
-            var minified = compile(json.glsl, "fragment");
-            console.log("Compiled GLSL: ("+json.glsl.length+" -> "+minified.length+" bytes)");
+            var minified = minify(json);
+            console.log("Compiled GLSL: ("+json.glsl.length+" -> "+minified.glsl.length+" bytes)");
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            json.glsl = minified;
-            res.end(JSON.stringify(json));
+            res.end(JSON.stringify(minified));
           }
           catch (e) {
             console.error(e.stack);

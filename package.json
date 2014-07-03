@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Minify a GLSL Transition",
   "author": "Gaëtan Renaudeau <renaudeau.gaetan@gmail.com>",
-  "main": "./compile.js",
+  "main": "./minify.js",
   "bin": {
     "glsl-transition-minify": "./cmd.js"
   },

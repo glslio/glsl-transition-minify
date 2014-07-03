@@ -24,4 +24,15 @@ function compile (source, name) {
   return output;
 }
 
-module.exports = compile;
+function minify (transition) {
+  var t = {};
+  for (var k in transition) {
+    if (transition.hasOwnProperty(k)) {
+      t[k] = transition[k];
+    }
+  }
+  t.glsl = compile(t.glsl, t.name||"fragment");
+  return t;
+}
+
+module.exports = minify;

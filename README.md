@@ -32,6 +32,11 @@ npm install -g glsl-transition-minify
 cat transition.glsl | glsl-transition-minify > minified.glsl
 ```
 
+or alternatively:
+```sh
+glsl-transition-minify -i transition.glsl -o minified.glsl
+```
+
 **Server usage**
 
 ```sh

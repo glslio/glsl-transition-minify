@@ -12,8 +12,13 @@
     "url": "https://github.com/glslio/glsl-transition-minify"
   },
   "keywords": ["glsl", "minifier", "glsl-transition", "cli"],
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
-    "commander": "2.2.0"
+    "commander": "2.2.0",
+    "assert": "1.0.x",
+    "mocha": "1.16.x"
   },
   "license": "MIT"
 }

@@ -67,7 +67,7 @@ function server () {
           }
           catch (e) {
             console.error(e.stack);
-            res.writeHead(300);
+            res.writeHead(400);
             res.end(e.toString());
           }
         });

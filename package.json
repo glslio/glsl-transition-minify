@@ -1,6 +1,6 @@
 {
   "name": "glsl-transition-minify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Minify a GLSL Transition",
   "author": "Gaëtan Renaudeau <renaudeau.gaetan@gmail.com>",
   "main": "./minify.js",
@@ -16,6 +16,9 @@
     "test": "mocha"
   },
   "dependencies": {
+    "glsl-tokenizer": "1.1.x",
+    "glsl-parser": "1.0.x",
+    "through": "2.3.4",
     "commander": "2.2.0",
     "assert": "1.0.x",
     "mocha": "1.16.x"

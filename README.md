@@ -1,4 +1,4 @@
-glsl-transition-minify
+glsl-transition-minify [![Build Status](https://travis-ci.org/glslio/glsl-transition-minify.svg?branch=master)](https://travis-ci.org/glslio/glsl-transition-minify)
 ===
 
 Minify a GLSL Transition.

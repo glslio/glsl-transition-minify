@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 
+var express = require('express');
+var glslTokenizer = require('glsl-tokenizer');
+var glslParser = require('glsl-parser');
+var glslMin = require('glsl-min-stream');
+var glslDeparser = require('glsl-deparser');
+
+
 var program = require('commander');
 var http = require("http");
 var fs = require("fs");
@@ -28,54 +35,68 @@ else {
   cli();
 }
 
+function compile (transition, cb) {
+  var t = {};
+  for (var k in transition) {
+    if (transition.hasOwnProperty(k)) {
+      t[k] = transition[k];
+    }
+  }
+  t.glsl='';
+  minify(transition.glsl).on('data', function (buf) {
+    t.glsl += buf;
+  }).on('end', function () {
+    cb(null, t);
+  }).once('error', function (err) {
+    cb(err);
+  }).resume();
+}
+
 function cli () {
-  var glsl = '';
-  program.input.resume();
-  program.input.on('data', function(buf) { glsl += buf.toString(); });
-  program.input.on('end', function() {
-    var result = compile({ glsl: glsl });
-    program.output.write(result.glsl);
-  });
+  program.input
+    .pipe(glslTokenizer())
+    .pipe(glslParser())
+    .pipe(glslMin())
+    .pipe(glslDeparser(false))
+    .pipe(program.output);
 }
 
 function server () {
-  http
-    .createServer(function (req, res) {
-      console.log(req.method+" "+req.url);
+  var app = express();
 
-      if (req.method=='GET' && req.url=='/') {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end('<html><body><h1>glsl-transition-minify</h1><p><pre><code>POST /compile\n\n{ "glsl": "__glsl__code__here__" }</code></pre></p></body></html>');
-      }
-      else if (req.method=='POST' && req.url === '/compile') {
-        var body = '';
-        req.setEncoding('utf8');
-        req.on('data', function (data) {
-          body += data.toString();
-          // Too much POST data, kill the connection!
-          if (body.length > 1e6)
-              req.connection.destroy();
-        });
-        req.on('end', function () {
-          try {
-            var json = JSON.parse(body);
-            if (!("glsl" in json)) throw new Error("No 'glsl' field in provided JSON.");
-            var minified = minify(json);
-            console.log("Compiled GLSL: ("+json.glsl.length+" -> "+minified.glsl.length+" bytes)");
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(minified));
-          }
-          catch (e) {
-            console.error(e.stack);
-            res.writeHead(400);
-            res.end(e.toString());
-          }
-        });
-      }
-      else {
-        res.writeHead(404);
-        res.end();
-      }
-    })
-    .listen(program.server);
+  process.on('uncaughtException', function(err){
+    console.error('uncaughtException: ' + err.message);
+    console.error(err.stack);
+  });
+
+  app.get("/", function (req, res) {
+    console.log("GET /");
+    res
+      .set({ 'Content-Type': 'text/html' })
+      .send('<html><body><h1>glsl-transition-minify</h1><p><pre><code>POST /compile\n\n__glsl__code__in_the_body__</code></pre></p></body></html>');
+  });
+
+  app.post("/compile", function (req, res) {
+    console.log("POST /compile – compiling...");
+    function onError (e) {
+      console.log("... compile failure: "+e.message);
+      console.error(e.stack);
+      res.status(400).send(e+"\n");
+    }
+    req
+      .pipe(glslTokenizer())
+      .on('error', onError)
+      .pipe(glslParser())
+      .on('error', onError)
+      .pipe(glslMin())
+      .on('error', onError)
+      .pipe(glslDeparser(false))
+      .on('error', onError)
+      .on('end', function () {
+        console.log("... compiled.");
+      })
+      .pipe(res);
+  });
+
+  app.listen(program.server);
 }

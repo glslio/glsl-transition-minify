@@ -12,11 +12,8 @@ npm install glsl-transition-minify
 
 ```javascript
 var minify = require("glsl-transition-minify");
-var minified = minify({
-  glsl: "...",
-  name: "foo",
-  ...
-});
+var minifiedStream = minify(process.stdin);
+minifiedStream.pipe(process.stdout);
 ```
 
 As a Command Line
@@ -46,9 +43,9 @@ glsl-transition-minify -s 10101
 then in another shell:
 
 ```sh
-curl -X POST -d '{ "glsl": "void main () { float abcdef = 1.000; }" }' http://localhost:10101/compile
+curl -X POST -d 'void main () { float abcdef = 1.000; }' http://localhost:10101/compile
 
 # value returned:
-{"glsl":"void main(){float a=1.;}"}
+void main(){float a=1.;}
 ```
 

@@ -1,12 +1,6 @@
 #!/usr/bin/env node
 
 var express = require('express');
-var glslTokenizer = require('glsl-tokenizer');
-var glslParser = require('glsl-parser');
-var glslMin = require('glsl-min-stream');
-var glslDeparser = require('glsl-deparser');
-
-
 var program = require('commander');
 var http = require("http");
 var fs = require("fs");
@@ -53,11 +47,7 @@ function compile (transition, cb) {
 }
 
 function cli () {
-  program.input
-    .pipe(glslTokenizer())
-    .pipe(glslParser())
-    .pipe(glslMin())
-    .pipe(glslDeparser(false))
+  minify(program.input, function (e) { console.error(e.stack); process.exit(1); })
     .pipe(program.output);
 }
 
@@ -83,15 +73,7 @@ function server () {
       console.error(e.stack);
       res.status(400).send(e+"\n");
     }
-    req
-      .pipe(glslTokenizer())
-      .on('error', onError)
-      .pipe(glslParser())
-      .on('error', onError)
-      .pipe(glslMin())
-      .on('error', onError)
-      .pipe(glslDeparser(false))
-      .on('error', onError)
+    minify(req, onError)
       .on('end', function () {
         console.log("... compiled.");
       })

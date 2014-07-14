@@ -1,6 +1,6 @@
 {
   "name": "glsl-transition-minify",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Minify a GLSL Transition",
   "author": "Gaëtan Renaudeau <renaudeau.gaetan@gmail.com>",
   "main": "./minify.js",

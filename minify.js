@@ -11,6 +11,12 @@ module.exports = function echo (input, onError) {
     };
   }
   return input
+    .on('error', onError)
+    .pipe(glslTokenizer())
+    .on('error', onError)
+    .pipe(glslParser())
+    .on('error', onError)
+    .pipe(glslDeparser(false))
     .on('error', onError);
 };
 
